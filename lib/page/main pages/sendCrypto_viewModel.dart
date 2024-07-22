@@ -7,6 +7,11 @@ class SendCryptoScreenViewModel extends StatefulWidget {
 }
 
 class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  String _selectedNetwork = 'BTC';
+  int _trustScore = 0;
+
   final List<String> addressSuggestions = [
     '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
     '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
@@ -17,7 +22,18 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
     // Simulate a network request with a delay
     await Future.delayed(const Duration(seconds: 2));
     // Replace this with actual API call to fetch trust score
-    return 97; // Example trust score
+    return 20; // Example trust score
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the trust score when the screen is initialized
+    _fetchTrustScore().then((score) {
+      setState(() {
+        _trustScore = score;
+      });
+    });
   }
 
   void _showConfirmDialog(BuildContext context, String address, int trustScore,
@@ -216,7 +232,9 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                           style: const TextStyle(color: Colors.white),
                         );
                       },
-                      onSelected: (String selection) {},
+                      onSelected: (String selection) {
+                        _addressController.text = selection;
+                      },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<String> onSelected,
                           Iterable<String> options) {
@@ -325,7 +343,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           isExpanded: true,
-                          value: 'BTC',
+                          value: _selectedNetwork,
                           dropdownColor: const Color(0xFF19173D),
                           icon: const Icon(Icons.arrow_drop_down,
                               color: Colors.white),
@@ -353,7 +371,11 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                               ),
                             );
                           }).toList(),
-                          onChanged: (_) {},
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedNetwork = newValue!;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -373,6 +395,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                         children: [
                           Expanded(
                             child: TextField(
+                              controller: _amountController,
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: const Color(0xFF19173D),
@@ -403,7 +426,13 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                       child: GradientButton(
                         text: 'Send',
                         onPressed: () {
-                          // Define the action for the button press
+                          _showConfirmDialog(
+                            context,
+                            _addressController.text,
+                            _trustScore,
+                            _selectedNetwork,
+                            _amountController.text,
+                          );
                         },
                       ),
                     ),
