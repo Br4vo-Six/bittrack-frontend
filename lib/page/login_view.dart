@@ -1,4 +1,4 @@
-import 'package:bittrack_frontend/page/balance_view.dart';
+import 'package:bittrack_frontend/page/main%20pages/home_view.dart';
 import 'package:bittrack_frontend/page/signUp_view.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +61,7 @@ class LoginScreen extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => BalanceScreenApp())),
+                                builder: (context) => HomeScreenApp())),
                       },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF9327F0),
