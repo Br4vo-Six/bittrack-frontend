@@ -1,3 +1,5 @@
+import 'package:bittrack_frontend/services/api_service.dart';
+import 'package:bittrack_frontend/services/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,6 +9,9 @@ class SendCryptoScreenViewModel extends StatefulWidget {
 }
 
 class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
+  final _apiService = ApiService();
+  final _dialogService = DialogService();
+
   TextEditingController _addressController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   String _selectedNetwork = 'BTC';
@@ -18,23 +23,16 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
     'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwfuk8h',
   ];
 
-  Future<int> _fetchTrustScore() async {
-    // Simulate a network request with a delay
-    await Future.delayed(const Duration(seconds: 2));
-    // Replace this with actual API call to fetch trust score
-    return 20; // Example trust score
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch the trust score when the screen is initialized
-    _fetchTrustScore().then((score) {
-      setState(() {
-        _trustScore = score;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Fetch the trust score when the screen is initialized
+  //   _apiService.fetchTrustScore().then((score) {
+  //     setState(() {
+  //       _trustScore = score;
+  //     });
+  //   });
+  // }
 
   void _showConfirmDialog(BuildContext context, String address, int trustScore,
       String network, String amount) {
@@ -233,7 +231,16 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                         );
                       },
                       onSelected: (String selection) {
-                        _addressController.text = selection;
+                        setState(() {
+                          _addressController.text = selection;
+                          _trustScore =
+                              0; // Reset trust score to show loading indicator
+                        });
+                        _apiService.fetchTrustScore().then((score) {
+                          setState(() {
+                            _trustScore = score;
+                          });
+                        });
                       },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<String> onSelected,
@@ -277,52 +284,39 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                               color: Colors.white70,
                               fontWeight: FontWeight.bold),
                         ),
-                        FutureBuilder<int>(
-                          future: _fetchTrustScore(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: SizedBox(
-                                  height: 25.0,
-                                  width: 25.0,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return const Text(
-                                'Error fetching trust score',
-                                style: TextStyle(color: Colors.red),
-                              );
-                            } else {
-                              int trustScore = snapshot.data!;
-                              return Row(
-                                children: [
-                                  Text(
-                                    '$trustScore',
-                                    style: TextStyle(
-                                        color: trustScore >= 50
-                                            ? Colors.green
-                                            : Colors.red,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Icon(
-                                    trustScore >= 50
-                                        ? Icons.check_circle
-                                        : Icons.cancel,
-                                    color: trustScore >= 50
+                        if (_trustScore == 0)
+                          const Center(
+                            child: SizedBox(
+                              height: 25.0,
+                              width: 25.0,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            ),
+                          )
+                        else
+                          Row(
+                            children: [
+                              Text(
+                                '$_trustScore',
+                                style: TextStyle(
+                                    color: _trustScore >= 50
                                         ? Colors.green
                                         : Colors.red,
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                _trustScore >= 50
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: _trustScore >= 50
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
@@ -426,7 +420,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                       child: GradientButton(
                         text: 'Send',
                         onPressed: () {
-                          _showConfirmDialog(
+                          _dialogService.showConfirmDialog(
                             context,
                             _addressController.text,
                             _trustScore,
@@ -451,7 +445,7 @@ class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  GradientButton({required this.text, required this.onPressed});
+  const GradientButton({required this.text, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
