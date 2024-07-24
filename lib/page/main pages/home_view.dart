@@ -23,6 +23,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   int currentPageIndex = 0;
+  String? initialAddress;
+
+  void navigateToSendCrypto(String? address) {
+    setState(() {
+      currentPageIndex = 1;
+      initialAddress = address;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +73,14 @@ class _HomeScreen extends State<HomeScreen> {
       ),
       body: <Widget>[
         /// Balance Page
-        const BalanceScreenViewModel(),
+        BalanceScreenViewModel(
+          navigateToSendCrypto: navigateToSendCrypto,
+        ),
 
         /// Send Crypto page
-        SendCryptoScreenViewModel(),
+        SendCryptoScreenViewModel(
+          initialAddress: initialAddress,
+        ),
 
         /// Wallet Page
         SendCryptoScreenViewModel(),

@@ -12,8 +12,7 @@ class ApiService {
 
   Future<int> fetchTrustScore() async {
     try {
-      //final int trustScore;
-
+      // final int trustScore this is put on damn bro this is cool
       final response = await http
           .get(Uri.parse(
               'http://www.randomnumberapi.com/api/v1.0/random?min=1&max=100&count=1'))

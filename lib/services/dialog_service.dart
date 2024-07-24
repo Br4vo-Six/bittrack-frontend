@@ -1,5 +1,6 @@
 // dialog_service.dart
 
+import 'package:bittrack_frontend/ui/gradient.button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -22,7 +23,7 @@ class DialogService {
               children: [
                 const Center(
                   child: Text(
-                    'Confirm Order',
+                    'Confirm Transfer',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -105,22 +106,12 @@ class DialogService {
                 ),
                 const SizedBox(height: 24),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // Handle send action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 15),
-                      backgroundColor: const Color(0xFF1D74F5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text('Send'),
-                  ),
-                ),
+                    child: GradientButton(
+                        text: 'Send',
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          // Handle send action
+                        })),
               ],
             ),
           ),

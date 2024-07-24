@@ -1,9 +1,15 @@
+import 'package:bittrack_frontend/dummy%20data/address.dummy.dart';
 import 'package:bittrack_frontend/services/api_service.dart';
 import 'package:bittrack_frontend/services/dialog_service.dart';
+import 'package:bittrack_frontend/ui/gradient.button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SendCryptoScreenViewModel extends StatefulWidget {
+  final String? initialAddress;
+
+  SendCryptoScreenViewModel({this.initialAddress});
+
   @override
   _SendCryptoScreen createState() => _SendCryptoScreen();
 }
@@ -17,146 +23,17 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
   String _selectedNetwork = 'BTC';
   int _trustScore = 0;
 
-  final List<String> addressSuggestions = [
-    '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-    '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
-    'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwfuk8h',
-  ];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Fetch the trust score when the screen is initialized
-  //   _apiService.fetchTrustScore().then((score) {
-  //     setState(() {
-  //       _trustScore = score;
-  //     });
-  //   });
-  // }
-
-  void _showConfirmDialog(BuildContext context, String address, int trustScore,
-      String network, String amount) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          backgroundColor: const Color(0xFF1E1C47),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text(
-                    'Confirm Order',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Address :',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  address,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Trust :',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      '$trustScore',
-                      style: TextStyle(
-                        color: trustScore >= 50 ? Colors.green : Colors.red,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 4.0),
-                    Icon(
-                      trustScore >= 50 ? Icons.check_circle : Icons.cancel,
-                      color: trustScore >= 50 ? Colors.green : Colors.red,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Network :',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    FaIcon(
-                      network == 'BTC'
-                          ? FontAwesomeIcons.bitcoin
-                          : network == 'ETH'
-                              ? FontAwesomeIcons.ethereum
-                              : FontAwesomeIcons.coins,
-                      color: Colors.orange,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      network,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Amount :',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  amount,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  trustScore >= 50
-                      ? 'This Address is Trusted'
-                      : 'This Address is Not Trusted',
-                  style: TextStyle(
-                      color: trustScore >= 50 ? Colors.green : Colors.red),
-                ),
-                const SizedBox(height: 24),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // Handle send action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 15),
-                      backgroundColor: const Color(0xFF1D74F5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text('Send'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialAddress != null) {
+      _addressController = TextEditingController(text: widget.initialAddress);
+      _apiService.fetchTrustScore().then((score) {
+        setState(() {
+          _trustScore = score;
+        });
+      });
+    }
   }
 
   @override
@@ -205,7 +82,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                         if (textEditingValue.text.isEmpty) {
                           return const Iterable<String>.empty();
                         }
-                        return addressSuggestions.where((String option) {
+                        return address_dummy.where((String option) {
                           return option.contains(textEditingValue.text);
                         });
                       },
@@ -213,6 +90,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                           TextEditingController textEditingController,
                           FocusNode focusNode,
                           VoidCallback onFieldSubmitted) {
+                        textEditingController.text = _addressController.text;
                         return TextField(
                           controller: textEditingController,
                           focusNode: focusNode,
@@ -434,42 +312,6 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GradientButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  const GradientButton({required this.text, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        margin: const EdgeInsets.only(top: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF00C6FB), Color(0xFF005BEA)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ),
       ),

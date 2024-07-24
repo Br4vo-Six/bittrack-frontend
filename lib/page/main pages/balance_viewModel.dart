@@ -1,8 +1,11 @@
+import 'package:bittrack_frontend/dummy%20data/address.dummy.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BalanceScreenViewModel extends StatelessWidget {
-  const BalanceScreenViewModel({super.key});
+  final Function(String?) navigateToSendCrypto;
+
+  const BalanceScreenViewModel({super.key, required this.navigateToSendCrypto});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class BalanceScreenViewModel extends StatelessWidget {
               const SizedBox(height: 20),
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => navigateToSendCrypto(null),
                   icon: const Text(
                     'Send',
                     style: TextStyle(color: Colors.white, fontSize: 18),
@@ -73,15 +76,20 @@ class BalanceScreenViewModel extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               const Text(
                 'Wallet Addresses',
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
               const SizedBox(height: 10),
-              const WalletAddressTile(address: '1Lb...ZnX71'),
-              const WalletAddressTile(address: 'mcQ...igMic'),
-              const WalletAddressTile(address: 'bRc...42TWE'),
+              Column(
+                children: List.generate(
+                  address_dummy.length,
+                  (index) => WalletAddressTile(
+                      address: address_dummy[index],
+                      onTap: () => navigateToSendCrypto(address_dummy[index])),
+                ),
+              ),
             ],
           ),
         ),
@@ -92,34 +100,43 @@ class BalanceScreenViewModel extends StatelessWidget {
 
 class WalletAddressTile extends StatelessWidget {
   final String address;
-
-  const WalletAddressTile({required this.address});
+  final VoidCallback onTap;
+  const WalletAddressTile({required this.address, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Color(0xFF19173D),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Color(0xFF1E1C47),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         title: Text(
           address,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
-        trailing: ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Text(
-            'Send',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          label: const Icon(Icons.send, color: Colors.white),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF9327F0),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-          ),
+        trailing: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF9327F0),
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(12),
+              ),
+              child: Icon(Icons.send, color: Colors.white),
+            ),
+            SizedBox(height: 4.0),
+            Flexible(
+              child: Text(
+                'Send',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );
