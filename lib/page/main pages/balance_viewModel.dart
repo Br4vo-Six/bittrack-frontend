@@ -45,7 +45,7 @@ class BalanceScreenViewModel extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '1M Satoshi',
+                            '1.000.000 Satoshi',
                             style: TextStyle(color: Colors.white, fontSize: 24),
                           ),
                           Text(
