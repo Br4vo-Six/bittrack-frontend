@@ -22,6 +22,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
   TextEditingController _amountController = TextEditingController();
   String _selectedNetwork = 'BTC';
   int _trustScore = 0;
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -29,11 +30,21 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
     if (widget.initialAddress != null) {
       _addressController = TextEditingController(text: widget.initialAddress);
       _apiService.fetchTrustScore().then((score) {
-        setState(() {
-          _trustScore = score;
-        });
+        if (!_isDisposed) {
+          setState(() {
+            _trustScore = score;
+          });
+        }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _addressController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -115,9 +126,11 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                               0; // Reset trust score to show loading indicator
                         });
                         _apiService.fetchTrustScore().then((score) {
-                          setState(() {
-                            _trustScore = score;
-                          });
+                          if (!_isDisposed) {
+                            setState(() {
+                              _trustScore = score;
+                            });
+                          }
                         });
                       },
                       optionsViewBuilder: (BuildContext context,
