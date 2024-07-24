@@ -1,10 +1,17 @@
 import 'package:bittrack_frontend/page/login_view.dart';
 import 'package:bittrack_frontend/page/signUp_view.dart';
+import 'package:bittrack_frontend/provider/userProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

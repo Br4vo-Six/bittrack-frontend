@@ -1,6 +1,8 @@
 import 'package:bittrack_frontend/dummy%20data/address.dummy.dart';
+import 'package:bittrack_frontend/provider/userProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class BalanceScreenViewModel extends StatelessWidget {
   final Function(String?) navigateToSendCrypto;
@@ -9,6 +11,8 @@ class BalanceScreenViewModel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final username = Provider.of<UserProvider>(context).username;
+
     return Scaffold(
       backgroundColor: const Color(0xFF14123A),
       appBar: AppBar(
@@ -22,7 +26,7 @@ class BalanceScreenViewModel extends StatelessWidget {
               children: [
                 CryptoDropdownWidget(),
                 const Spacer(),
-                UserNameWidget(),
+                UserNameWidget(username: username),
                 const Spacer(),
                 NotificationBellWidget(),
               ],
@@ -180,20 +184,24 @@ class CryptoDropdownWidget extends StatelessWidget {
 }
 
 class UserNameWidget extends StatelessWidget {
+  final String? username;
+
+  const UserNameWidget({super.key, this.username});
+
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Seno Pamungkas',
+          username ?? '',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
           ),
         ),
-        SizedBox(width: 5),
-        Icon(
+        const SizedBox(width: 5),
+        const Icon(
           Icons.arrow_drop_down,
           color: Colors.white,
         ),
