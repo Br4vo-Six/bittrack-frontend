@@ -10,7 +10,7 @@ class ApiService {
   String get currentURL => deployURL;
   final Duration timeoutDuration = const Duration(seconds: 10);
 
-  Future<int> fetchTrustScore() async {
+  Future<int> fetchTrustScore(String address) async {
     try {
       // final int trustScore this is put on damn bro this is cool
       final response = await http

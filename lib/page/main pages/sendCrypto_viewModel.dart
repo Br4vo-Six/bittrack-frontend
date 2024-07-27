@@ -29,13 +29,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
     super.initState();
     if (widget.initialAddress != null) {
       _addressController = TextEditingController(text: widget.initialAddress);
-      _apiService.fetchTrustScore().then((score) {
-        if (!_isDisposed) {
-          setState(() {
-            _trustScore = score;
-          });
-        }
-      });
+      _fetchTrustScore(widget.initialAddress!);
     }
   }
 
@@ -45,6 +39,24 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
     _addressController.dispose();
     _amountController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchTrustScore(String address) async {
+    try {
+      final score = await _apiService.fetchTrustScore(address);
+      if (!_isDisposed) {
+        setState(() {
+          _trustScore = score;
+        });
+      }
+    } catch (e) {
+      // Handle error
+      if (!_isDisposed) {
+        setState(() {
+          _trustScore = 0;
+        });
+      }
+    }
   }
 
   @override
@@ -125,13 +137,7 @@ class _SendCryptoScreen extends State<SendCryptoScreenViewModel> {
                           _trustScore =
                               0; // Reset trust score to show loading indicator
                         });
-                        _apiService.fetchTrustScore().then((score) {
-                          if (!_isDisposed) {
-                            setState(() {
-                              _trustScore = score;
-                            });
-                          }
-                        });
+                        _fetchTrustScore(selection);
                       },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<String> onSelected,
